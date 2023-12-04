@@ -10,6 +10,9 @@ namespace Octree_Color_Quantization_WinForms
     {
         public const int ChildNumber = 8;
         public const int MaxDepth = 8;
+
+        public const int PictureBoxXMargin = 30;
+        public const int PictureBoxYMargin = 50;
     }
 
     public class Node
@@ -39,7 +42,7 @@ namespace Octree_Color_Quantization_WinForms
             Root = new Node();
         }
 
-        private int GetColorIndex(Color color, int level)
+        private static int GetColorIndex(Color color, int level)
         {
             int index = 0;
             int mask = 0b10000000 >> level;

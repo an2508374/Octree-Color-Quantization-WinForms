@@ -1,15 +1,69 @@
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+
 namespace Octree_Color_Quantization_WinForms
 {
     public partial class Form1 : Form
     {
-        public Octree octree;
+        private Bitmap? importedImage;
+        private Octree octreeStructure;
+
+        private PictureBox pictureBoxLeft;
 
         public Form1()
         {
             InitializeComponent();
 
-            octree = new Octree();
-            octree.InsertColor(Color.FromArgb(0b00101011, 0b11100011, 0b00011101));
+            pictureBoxLeft = new PictureBox();
+            splitContainer.Panel1.Controls.Add(pictureBoxLeft);
+
+            octreeStructure = new Octree();
+            octreeStructure.InsertColor(Color.FromArgb(0b00101011, 0b11100011, 0b00011101));
+        }
+
+        private (int, int, int, int) GetPictureBoxCoords(SplitterPanel panel, int inWidth, int inHeight)
+        {
+            int px, py, outWidth, outHeight;
+
+            if (inWidth > inHeight)
+            {
+                outWidth = panel.Width - 2 * Const.PictureBoxXMargin;
+                outHeight = (int)((double)outWidth / inWidth * inHeight);
+            }
+            else
+            {
+                outHeight = panel.Height - 2 * Const.PictureBoxYMargin;
+                outWidth = (int)((double)outHeight / inHeight * inWidth);
+            }
+
+            px = Const.PictureBoxXMargin;
+            py = Const.PictureBoxYMargin;
+
+            return (px, py, outWidth, outHeight);
+        }
+
+        private void ImportPictureMenuItem_Click(object sender, EventArgs e)
+        {
+            using OpenFileDialog importFileDialog = new OpenFileDialog();
+
+            importFileDialog.Title = "Import Image";
+            importFileDialog.Filter = "bmp files (*.bmp)|*.bmp";
+
+            if (importFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                importedImage = new Bitmap(importFileDialog.FileName);
+
+                (int px, int py, int outWidth, int outHeight) = GetPictureBoxCoords(splitContainer.Panel1,
+                    importedImage.Width, importedImage.Height);
+
+                pictureBoxLeft.Location = new Point(px, py);
+                pictureBoxLeft.Size = new Size(outWidth, outHeight);
+                pictureBoxLeft.Image = new Bitmap(importedImage, outWidth, outHeight);
+            }
+        }
+
+        private void ExportPictureMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

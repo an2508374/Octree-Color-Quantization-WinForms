@@ -28,41 +28,71 @@
         /// </summary>
         private void InitializeComponent()
         {
-            panelLeftPic = new Panel();
-            panelRightPic = new Panel();
+            menuStrip = new MenuStrip();
+            importPictureMenuItem = new ToolStripMenuItem();
+            exportPictureMenuItem = new ToolStripMenuItem();
+            splitContainer = new SplitContainer();
+            menuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
+            splitContainer.SuspendLayout();
             SuspendLayout();
             // 
-            // panelLeftPic
+            // menuStrip
             // 
-            panelLeftPic.Location = new Point(0, 0);
-            panelLeftPic.Name = "panelLeftPic";
-            panelLeftPic.Size = new Size(708, 764);
-            panelLeftPic.TabIndex = 0;
+            menuStrip.ImageScalingSize = new Size(20, 20);
+            menuStrip.Items.AddRange(new ToolStripItem[] { importPictureMenuItem, exportPictureMenuItem });
+            menuStrip.Location = new Point(0, 0);
+            menuStrip.Name = "menuStrip";
+            menuStrip.Size = new Size(1422, 28);
+            menuStrip.TabIndex = 1;
+            menuStrip.Text = "menuStrip1";
             // 
-            // panelRightPic
+            // importPictureMenuItem
             // 
-            panelRightPic.Location = new Point(715, 0);
-            panelRightPic.Name = "panelRightPic";
-            panelRightPic.Size = new Size(708, 764);
-            panelRightPic.TabIndex = 0;
+            importPictureMenuItem.Name = "importPictureMenuItem";
+            importPictureMenuItem.Size = new Size(117, 24);
+            importPictureMenuItem.Text = "Import Picture";
+            importPictureMenuItem.Click += ImportPictureMenuItem_Click;
+            // 
+            // exportPictureMenuItem
+            // 
+            exportPictureMenuItem.Name = "exportPictureMenuItem";
+            exportPictureMenuItem.Size = new Size(115, 24);
+            exportPictureMenuItem.Text = "Export Picture";
+            exportPictureMenuItem.Click += ExportPictureMenuItem_Click;
+            // 
+            // splitContainer
+            // 
+            splitContainer.Dock = DockStyle.Fill;
+            splitContainer.Location = new Point(0, 0);
+            splitContainer.Name = "splitContainer";
+            splitContainer.Size = new Size(1422, 763);
+            splitContainer.SplitterDistance = 710;
+            splitContainer.TabIndex = 2;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1422, 763);
-            Controls.Add(panelRightPic);
-            Controls.Add(panelLeftPic);
+            Controls.Add(menuStrip);
+            Controls.Add(splitContainer);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Octree Color Quantization";
             WindowState = FormWindowState.Maximized;
+            menuStrip.ResumeLayout(false);
+            menuStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
+            splitContainer.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
-
-        private Panel panelLeftPic;
-        private Panel panelRightPic;
+        private MenuStrip menuStrip;
+        private ToolStripMenuItem importPictureMenuItem;
+        private ToolStripMenuItem exportPictureMenuItem;
+        private SplitContainer splitContainer;
     }
 }
