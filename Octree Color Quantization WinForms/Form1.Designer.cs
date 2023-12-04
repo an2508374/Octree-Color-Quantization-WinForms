@@ -28,13 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
+            panelLeftPic = new Panel();
+            panelRightPic = new Panel();
             SuspendLayout();
+            // 
+            // panelLeftPic
+            // 
+            panelLeftPic.Location = new Point(0, 0);
+            panelLeftPic.Name = "panelLeftPic";
+            panelLeftPic.Size = new Size(708, 764);
+            panelLeftPic.TabIndex = 0;
+            // 
+            // panelRightPic
+            // 
+            panelRightPic.Location = new Point(715, 0);
+            panelRightPic.Name = "panelRightPic";
+            panelRightPic.Size = new Size(708, 764);
+            panelRightPic.TabIndex = 0;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1422, 763);
+            Controls.Add(panelRightPic);
+            Controls.Add(panelLeftPic);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Octree Color Quantization";
@@ -43,5 +61,8 @@
         }
 
         #endregion
+
+        private Panel panelLeftPic;
+        private Panel panelRightPic;
     }
 }
