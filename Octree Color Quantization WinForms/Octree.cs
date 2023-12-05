@@ -17,25 +17,25 @@ namespace Octree_Color_Quantization_WinForms
 
     public class Node
     {
-        public ulong references;
-        public ulong red;
-        public ulong green;
-        public ulong blue;
-        public Node?[] children;
+        public ulong References { get; set; }
+        public ulong Red { get; set; }
+        public ulong Green { get; set; }
+        public ulong Blue { get; set; }
+        public Node?[] Children { get; set; }
 
         public Node()
         {
-            references = 0;
-            red = 0;
-            green = 0;
-            blue = 0;
-            children = new Node[Const.ChildCount];
+            References = 0;
+            Red = 0;
+            Green = 0;
+            Blue = 0;
+            Children = new Node[Const.ChildCount];
         }
     }
 
     public class Octree
     {
-        public Node Root { get; set; }
+        public Node Root { get; private set; }
         private PriorityQueue<Node, ulong>[] Levels { get; set; }
         private int LeafCount { get; set; }
 
@@ -84,21 +84,21 @@ namespace Octree_Color_Quantization_WinForms
             {
                 index = GetColorIndex(color, i);
 
-                nextNode = lastNode.children[index];
+                nextNode = lastNode.Children[index];
 
                 if (nextNode == null)
                 {
                     nextNode = new Node();
-                    lastNode.children[index] = nextNode;
+                    lastNode.Children[index] = nextNode;
                 }
 
                 lastNode = nextNode;
             }
 
-            ++lastNode.references;
-            lastNode.red += color.R;
-            lastNode.green += color.G;
-            lastNode.blue += color.B;
+            ++lastNode.References;
+            lastNode.Red += color.R;
+            lastNode.Green += color.G;
+            lastNode.Blue += color.B;
         }
 
         public void UpdateFieldsRec(Node? node, int level)
@@ -109,18 +109,18 @@ namespace Octree_Color_Quantization_WinForms
             }
 
             bool isLeaf = true;
-            for (int i = 0; i < Const.ChildCount; ++i)
+            for (int i = 0; i < node.Children.Length; ++i)
             {
-                Node? child = node.children[i];
+                Node? child = node.Children[i];
 
                 UpdateFieldsRec(child, level + 1);
-                
+
                 if (child != null)
                 {
-                    node.references += child.references;
-                    node.red += child.red;
-                    node.green += child.green;
-                    node.blue += child.blue;
+                    node.References += child.References;
+                    node.Red += child.Red;
+                    node.Green += child.Green;
+                    node.Blue += child.Blue;
                     isLeaf = false;
                 }
             }
@@ -131,13 +131,13 @@ namespace Octree_Color_Quantization_WinForms
             }
             else
             {
-                Levels[level].Enqueue(node, node.references);
+                Levels[level].Enqueue(node, node.References);
             }
         }
 
         public void UpdateTree(int colorCount)
         {
-            for (int i = Const.MaxDepth - 1; i >= 0; --i)
+            for (int i = Levels.Length - 1; i >= 0; --i)
             {
                 PriorityQueue<Node, ulong> pQueue = Levels[i];
 
@@ -157,9 +157,9 @@ namespace Octree_Color_Quantization_WinForms
 
                     for (int j = 0; j < Const.ChildCount; ++j)
                     {
-                        if (minNode.children[j] != null)
+                        if (minNode.Children[j] != null)
                         {
-                            minNode.children[j] = null;
+                            minNode.Children[j] = null;
                             --LeafCount;
                         }
                     }
