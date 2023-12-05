@@ -41,6 +41,24 @@ namespace Octree_Color_Quantization_WinForms
             return (px, py, outWidth, outHeight);
         }
 
+        private void InsertColorsToOctree()
+        {
+            if (importedImage == null)
+            {
+                return;
+            }
+
+            octreeStructure = new Octree();
+
+            for (int i = 0; i < importedImage.Width; ++i)
+            {
+                for (int j = 0; j < importedImage.Height; ++j)
+                {
+                    octreeStructure.InsertColor(importedImage.GetPixel(i, j));
+                }
+            }
+        }
+
         private void ImportPictureMenuItem_Click(object sender, EventArgs e)
         {
             using OpenFileDialog importFileDialog = new OpenFileDialog();
@@ -58,6 +76,8 @@ namespace Octree_Color_Quantization_WinForms
                 pictureBoxLeft.Location = new Point(px, py);
                 pictureBoxLeft.Size = new Size(outWidth, outHeight);
                 pictureBoxLeft.Image = new Bitmap(importedImage, outWidth, outHeight);
+
+                InsertColorsToOctree();
             }
         }
 

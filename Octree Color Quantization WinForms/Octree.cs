@@ -36,10 +36,17 @@ namespace Octree_Color_Quantization_WinForms
     public class Octree
     {
         Node Root { get; set; }
+        List<Node>[] Levels { get; set; }
 
         public Octree()
         {
             Root = new Node();
+            Levels = new List<Node>[Const.MaxDepth];
+
+            for (int i = 0; i < Levels.Length; ++i)
+            {
+                Levels[i] = new List<Node>();
+            }
         }
 
         private static int GetColorIndex(Color color, int level)
@@ -81,6 +88,7 @@ namespace Octree_Color_Quantization_WinForms
                 {
                     nextNode = new Node();
                     lastNode.childs[index] = nextNode;
+                    Levels[i].Add(nextNode);
                 }
 
                 lastNode = nextNode;
