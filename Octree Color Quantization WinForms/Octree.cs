@@ -36,18 +36,18 @@ namespace Octree_Color_Quantization_WinForms
     public class Octree
     {
         public Node Root { get; set; }
-        private List<Node>[] Levels { get; set; }
+        private PriorityQueue<Node, ulong>[] Levels { get; set; }
         private int LeafCount { get; set; }
 
         public Octree()
         {
             Root = new Node();
-            Levels = new List<Node>[Const.MaxDepth];
+            Levels = new PriorityQueue<Node, ulong>[Const.MaxDepth];
             LeafCount = 0;
 
             for (int i = 0; i < Levels.Length; ++i)
             {
-                Levels[i] = new List<Node>();
+                Levels[i] = new PriorityQueue<Node, ulong>();
             }
         }
 
@@ -90,7 +90,6 @@ namespace Octree_Color_Quantization_WinForms
                 {
                     nextNode = new Node();
                     lastNode.children[index] = nextNode;
-                    Levels[i].Add(nextNode);
                 }
 
                 lastNode = nextNode;
@@ -102,18 +101,19 @@ namespace Octree_Color_Quantization_WinForms
             lastNode.blue += color.B;
         }
 
-        public void UpdateFieldsRec(Node? node)
+        public void UpdateFieldsRec(Node? node, int level)
         {
             if (node == null)
             {
                 return;
             }
 
+            bool isLeaf = true;
             for (int i = 0; i < Const.ChildCount; ++i)
             {
                 Node? child = node.children[i];
 
-                UpdateFieldsRec(child);
+                UpdateFieldsRec(child, level + 1);
                 
                 if (child != null)
                 {
@@ -121,37 +121,39 @@ namespace Octree_Color_Quantization_WinForms
                     node.red += child.red;
                     node.green += child.green;
                     node.blue += child.blue;
+                    isLeaf = false;
                 }
             }
-        }
 
-        public void UpdateLeafCountAfterInserting()
-        {
-            LeafCount = Levels[Const.MaxDepth - 1].Count;
+            if (isLeaf)
+            {
+                ++LeafCount;
+            }
+            else
+            {
+                Levels[level].Enqueue(node, node.references);
+            }
         }
 
         public void UpdateTree(int colorCount)
         {
             for (int i = Const.MaxDepth - 1; i >= 0; --i)
             {
-                List<Node> list = Levels[i];
+                PriorityQueue<Node, ulong> pQueue = Levels[i];
 
                 while (true)
                 {
-                    if (list.Count <= 0 || LeafCount <= colorCount)
+                    if (LeafCount <= colorCount)
+                    {
+                        return;
+                    }
+
+                    if (pQueue.Count <= 0)
                     {
                         break;
                     }
 
-                    Node minNode = list[0];
-
-                    foreach (Node node in list)
-                    {
-                        if (node.references < minNode.references)
-                        {
-                            minNode = node;
-                        }
-                    }
+                    Node minNode = pQueue.Dequeue();
 
                     for (int j = 0; j < Const.ChildCount; ++j)
                     {
@@ -161,8 +163,6 @@ namespace Octree_Color_Quantization_WinForms
                             --LeafCount;
                         }
                     }
-
-                    list.Remove(minNode);
                     ++LeafCount; // minNode becomes a leaf
                 }
             }

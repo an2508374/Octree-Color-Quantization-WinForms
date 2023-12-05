@@ -58,9 +58,8 @@ namespace Octree_Color_Quantization_WinForms
                 }
             }
 
-            ocTree.UpdateLeafCountAfterInserting();
-            ocTree.UpdateFieldsRec(ocTree.Root);
-            ocTree.UpdateTree(360);
+            ocTree.UpdateFieldsRec(ocTree.Root, 0);
+            ocTree.UpdateTree(256); // hardcoded magic number
         }
 
         private void ImportPictureMenuItem_Click(object sender, EventArgs e)
