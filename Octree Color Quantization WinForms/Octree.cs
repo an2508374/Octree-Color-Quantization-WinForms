@@ -8,7 +8,7 @@ namespace Octree_Color_Quantization_WinForms
 {
     public static class Const
     {
-        public const int ChildNumber = 8;
+        public const int ChildCount = 8;
         public const int MaxDepth = 8;
 
         public const int PictureBoxXMargin = 30;
@@ -21,7 +21,7 @@ namespace Octree_Color_Quantization_WinForms
         public ulong red;
         public ulong green;
         public ulong blue;
-        public Node?[] childs;
+        public Node?[] children;
 
         public Node()
         {
@@ -29,19 +29,21 @@ namespace Octree_Color_Quantization_WinForms
             red = 0;
             green = 0;
             blue = 0;
-            childs = new Node[Const.ChildNumber];
+            children = new Node[Const.ChildCount];
         }
     }
 
     public class Octree
     {
-        Node Root { get; set; }
-        List<Node>[] Levels { get; set; }
+        public Node Root { get; set; }
+        private List<Node>[] Levels { get; set; }
+        private int LeafCount { get; set; }
 
         public Octree()
         {
             Root = new Node();
             Levels = new List<Node>[Const.MaxDepth];
+            LeafCount = 0;
 
             for (int i = 0; i < Levels.Length; ++i)
             {
@@ -82,12 +84,12 @@ namespace Octree_Color_Quantization_WinForms
             {
                 index = GetColorIndex(color, i);
 
-                nextNode = lastNode.childs[index];
+                nextNode = lastNode.children[index];
 
                 if (nextNode == null)
                 {
                     nextNode = new Node();
-                    lastNode.childs[index] = nextNode;
+                    lastNode.children[index] = nextNode;
                     Levels[i].Add(nextNode);
                 }
 
@@ -98,6 +100,39 @@ namespace Octree_Color_Quantization_WinForms
             lastNode.red += color.R;
             lastNode.green += color.G;
             lastNode.blue += color.B;
+        }
+
+        public void UpdateWeightMeans(Node? node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < Const.ChildCount; ++i)
+            {
+                Node? child = node.children[i];
+
+                UpdateWeightMeans(child);
+                
+                if (child != null)
+                {
+                    node.references += child.references;
+                    node.red += child.red;
+                    node.green += child.green;
+                    node.blue += child.blue;
+                }
+            }
+        }
+
+        public void UpdateLeafCountAfterInserting()
+        {
+            LeafCount = Levels[Const.MaxDepth - 1].Count;
+        }
+
+        public void UpdateTree(int colorCount)
+        {
+
         }
     }
 }

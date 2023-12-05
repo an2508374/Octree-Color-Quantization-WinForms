@@ -5,7 +5,7 @@ namespace Octree_Color_Quantization_WinForms
     public partial class Form1 : Form
     {
         private Bitmap? importedImage;
-        private Octree octreeStructure;
+        private Octree ocTree;
 
         private PictureBox pictureBoxLeft;
 
@@ -16,8 +16,8 @@ namespace Octree_Color_Quantization_WinForms
             pictureBoxLeft = new PictureBox();
             splitContainer.Panel1.Controls.Add(pictureBoxLeft);
 
-            octreeStructure = new Octree();
-            octreeStructure.InsertColor(Color.FromArgb(0b00101011, 0b11100011, 0b00011101));
+            ocTree = new Octree();
+            ocTree.InsertColor(Color.FromArgb(0b00101011, 0b11100011, 0b00011101));
         }
 
         private (int, int, int, int) GetPictureBoxCoords(SplitterPanel panel, int inWidth, int inHeight)
@@ -48,15 +48,19 @@ namespace Octree_Color_Quantization_WinForms
                 return;
             }
 
-            octreeStructure = new Octree();
+            ocTree = new Octree();
 
             for (int i = 0; i < importedImage.Width; ++i)
             {
                 for (int j = 0; j < importedImage.Height; ++j)
                 {
-                    octreeStructure.InsertColor(importedImage.GetPixel(i, j));
+                    ocTree.InsertColor(importedImage.GetPixel(i, j));
                 }
             }
+
+            ocTree.UpdateLeafCountAfterInserting();
+            ocTree.UpdateWeightMeans(ocTree.Root);
+            ocTree.UpdateTree(360);
         }
 
         private void ImportPictureMenuItem_Click(object sender, EventArgs e)
