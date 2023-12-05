@@ -59,7 +59,7 @@ namespace Octree_Color_Quantization_WinForms
             }
 
             ocTree.UpdateLeafCountAfterInserting();
-            ocTree.UpdateWeightMeans(ocTree.Root);
+            ocTree.UpdateFieldsRec(ocTree.Root);
             ocTree.UpdateTree(360);
         }
 

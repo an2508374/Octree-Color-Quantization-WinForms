@@ -102,7 +102,7 @@ namespace Octree_Color_Quantization_WinForms
             lastNode.blue += color.B;
         }
 
-        public void UpdateWeightMeans(Node? node)
+        public void UpdateFieldsRec(Node? node)
         {
             if (node == null)
             {
@@ -113,7 +113,7 @@ namespace Octree_Color_Quantization_WinForms
             {
                 Node? child = node.children[i];
 
-                UpdateWeightMeans(child);
+                UpdateFieldsRec(child);
                 
                 if (child != null)
                 {
@@ -132,7 +132,40 @@ namespace Octree_Color_Quantization_WinForms
 
         public void UpdateTree(int colorCount)
         {
+            for (int i = Const.MaxDepth - 1; i >= 0; --i)
+            {
+                List<Node> list = Levels[i];
 
+                while (true)
+                {
+                    if (list.Count <= 0 || LeafCount <= colorCount)
+                    {
+                        break;
+                    }
+
+                    Node minNode = list[0];
+
+                    foreach (Node node in list)
+                    {
+                        if (node.references < minNode.references)
+                        {
+                            minNode = node;
+                        }
+                    }
+
+                    for (int j = 0; j < Const.ChildCount; ++j)
+                    {
+                        if (minNode.children[j] != null)
+                        {
+                            minNode.children[j] = null;
+                            --LeafCount;
+                        }
+                    }
+
+                    list.Remove(minNode);
+                    ++LeafCount; // minNode becomes a leaf
+                }
+            }
         }
     }
 }
