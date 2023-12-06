@@ -22,6 +22,8 @@ namespace Octree_Color_Quantization_WinForms
         public ulong Green { get; set; }
         public ulong Blue { get; set; }
         public Node?[] Children { get; set; }
+        public bool IsLeaf { get; set; }
+        public int PaletteIndex { get; set; }
 
         public Node()
         {
@@ -37,13 +39,17 @@ namespace Octree_Color_Quantization_WinForms
     {
         public Node Root { get; private set; }
         private PriorityQueue<Node, ulong>[] Levels { get; set; }
-        private int LeafCount { get; set; }
+        public int LeafCount { get; private set; }
+        public List<Color> Palette { get; set; }
+        public int PaletteLength { get; set; }
 
         public Octree()
         {
             Root = new Node();
             Levels = new PriorityQueue<Node, ulong>[Const.MaxDepth];
             LeafCount = 0;
+            Palette = new List<Color>();
+            PaletteLength = 0;
 
             for (int i = 0; i < Levels.Length; ++i)
             {
@@ -99,6 +105,7 @@ namespace Octree_Color_Quantization_WinForms
             lastNode.Red += color.R;
             lastNode.Green += color.G;
             lastNode.Blue += color.B;
+            lastNode.IsLeaf = true;
         }
 
         public void UpdateFieldsRec(Node? node, int level)
@@ -108,7 +115,6 @@ namespace Octree_Color_Quantization_WinForms
                 return;
             }
 
-            bool isLeaf = true;
             for (int i = 0; i < node.Children.Length; ++i)
             {
                 Node? child = node.Children[i];
@@ -121,11 +127,10 @@ namespace Octree_Color_Quantization_WinForms
                     node.Red += child.Red;
                     node.Green += child.Green;
                     node.Blue += child.Blue;
-                    isLeaf = false;
                 }
             }
 
-            if (isLeaf)
+            if (node.IsLeaf)
             {
                 ++LeafCount;
             }
@@ -163,9 +168,62 @@ namespace Octree_Color_Quantization_WinForms
                             --LeafCount;
                         }
                     }
-                    ++LeafCount; // minNode becomes a leaf
+
+                    minNode.IsLeaf = true;
+                    ++LeafCount;
                 }
             }
+        }
+
+        public void UpdatePalette()
+        {
+            Palette.Clear();
+            UpdatePaletteRec(Root);
+        }
+
+        public void UpdatePaletteRec(Node? node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            if (node.IsLeaf)
+            {
+                int red = (int)(node.Red / node.References);
+                int green = (int)(node.Green / node.References);
+                int blue = (int)(node.Blue / node.References);
+
+                Palette.Add(Color.FromArgb(255, red, green, blue));
+                node.PaletteIndex = PaletteLength++;
+
+                return;
+            }
+
+            for (int i = 0; i < node.Children.Length; ++i)
+            {
+                UpdatePaletteRec(node.Children[i]);
+            }
+        }
+
+        public int GetPaletteIndex(Color color)
+        {
+            int level = 0;
+            int colorIndex, paletteIndex = 0;
+            Node? node = Root;
+
+            while (node != null && !node.IsLeaf)
+            {
+                colorIndex = GetColorIndex(color, level++);
+                node = node.Children[colorIndex];
+            }
+
+            if (node != null)
+            {
+                paletteIndex = node.PaletteIndex;
+            }
+
+            return paletteIndex;
         }
     }
 }

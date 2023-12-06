@@ -5,9 +5,11 @@ namespace Octree_Color_Quantization_WinForms
     public partial class Form1 : Form
     {
         private Bitmap? importedImage;
+        private Bitmap? processedImage;
         private Octree ocTree;
 
         private PictureBox pictureBoxLeft;
+        private PictureBox pictureBoxRight;
 
         public Form1()
         {
@@ -15,6 +17,9 @@ namespace Octree_Color_Quantization_WinForms
 
             pictureBoxLeft = new PictureBox();
             splitContainer.Panel1.Controls.Add(pictureBoxLeft);
+
+            pictureBoxRight = new PictureBox();
+            splitContainer.Panel2.Controls.Add(pictureBoxRight);
 
             ocTree = new Octree();
             ocTree.InsertColor(Color.FromArgb(0b00101011, 0b11100011, 0b00011101));
@@ -59,7 +64,40 @@ namespace Octree_Color_Quantization_WinForms
             }
 
             ocTree.UpdateFieldsRec(ocTree.Root, 0);
+
+            // below elements are there only for tests
             ocTree.UpdateTree(256); // hardcoded magic number
+            ocTree.UpdatePalette();
+            UpdateProcessedImage();
+
+            if (processedImage != null)
+            {
+                (int px, int py, int outWidth, int outHeight) = GetPictureBoxCoords(splitContainer.Panel2,
+                    processedImage.Width, processedImage.Height);
+
+                pictureBoxRight.Location = new Point(px, py);
+                pictureBoxRight.Size = new Size(outWidth, outHeight);
+                pictureBoxRight.Image = new Bitmap(processedImage, outWidth, outHeight);
+            }
+        }
+
+        private void UpdateProcessedImage()
+        {
+            if (importedImage == null)
+            {
+                return;
+            }
+
+            processedImage = new Bitmap(importedImage.Width, importedImage.Height);
+
+            for (int i = 0; i < importedImage.Width; ++i)
+            {
+                for (int j = 0; j < importedImage.Height; ++j)
+                {
+                    int paletteIndex = ocTree.GetPaletteIndex(importedImage.GetPixel(i, j));
+                    processedImage.SetPixel(i, j, ocTree.Palette[paletteIndex]);
+                }
+            }
         }
 
         private void ImportPictureMenuItem_Click(object sender, EventArgs e)
