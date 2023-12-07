@@ -1,3 +1,4 @@
+using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Octree_Color_Quantization_WinForms
@@ -8,42 +9,76 @@ namespace Octree_Color_Quantization_WinForms
         private Bitmap? processedImage;
         private Octree ocTree;
 
-        private PictureBox pictureBoxLeft;
-        private PictureBox pictureBoxRight;
+        private TableLayoutPanel verticalPanel;
+        private TableLayoutPanel horizontalPanel;
+        private PictureBox pictureBoxImported;
+        private PictureBox pictureBoxProcessed;
 
         public Form1()
         {
             InitializeComponent();
 
-            pictureBoxLeft = new PictureBox();
-            splitContainer.Panel1.Controls.Add(pictureBoxLeft);
+            pictureBoxImported = new PictureBox();
+            pictureBoxImported.Visible = false;
+            groupBoxImported.Controls.Add(pictureBoxImported);
 
-            pictureBoxRight = new PictureBox();
-            splitContainer.Panel2.Controls.Add(pictureBoxRight);
+            pictureBoxProcessed = new PictureBox();
+            pictureBoxProcessed.Visible = false;
+            groupBoxProcessed.Controls.Add(pictureBoxProcessed);
+
+            verticalPanel = new TableLayoutPanel();
+            verticalPanel.ColumnCount = 1;
+            verticalPanel.RowCount = 3;
+            verticalPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            verticalPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
+            verticalPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 38F));
+            verticalPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 62F));
+
+            horizontalPanel = new TableLayoutPanel();
+            horizontalPanel.ColumnCount = 3;
+            horizontalPanel.RowCount = 1;
+            horizontalPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            horizontalPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            horizontalPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            horizontalPanel.RowStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
+            panel.Controls.Add(verticalPanel);
+            verticalPanel.Controls.Add(menuStrip, 0, 0);
+            verticalPanel.Controls.Add(horizontalPanel, 0, 1);
+
+            verticalPanel.Dock = DockStyle.Fill;
+            horizontalPanel.Dock = DockStyle.Fill;
+
+            horizontalPanel.Controls.Add(groupBoxImported, 0, 0);
+            horizontalPanel.Controls.Add(groupBoxProcessed, 1, 0);
+            horizontalPanel.Controls.Add(groupBoxOptions, 2, 0);
 
             ocTree = new Octree();
             ocTree.InsertColor(Color.FromArgb(0b00101011, 0b11100011, 0b00011101));
         }
 
-        private (int, int, int, int) GetPictureBoxCoords(SplitterPanel panel, int inWidth, int inHeight)
+        private (int, int, int, int) GetPictureBoxCoords(GroupBox groupBox, int inWidth, int inHeight)
         {
             int px, py, outWidth, outHeight;
 
-            if (inWidth > inHeight)
-            {
-                outWidth = panel.Width - 2 * Const.PictureBoxXMargin;
-                outHeight = (int)((double)outWidth / inWidth * inHeight);
-            }
-            else
-            {
-                outHeight = panel.Height - 2 * Const.PictureBoxYMargin;
-                outWidth = (int)((double)outHeight / inHeight * inWidth);
-            }
+            outHeight = groupBox.Height - Const.PictureBoxLowerMargin - Const.PictureBoxUpperMargin;
+            outWidth = (int)((double)outHeight / inHeight * inWidth);
 
-            px = Const.PictureBoxXMargin;
-            py = Const.PictureBoxYMargin;
+            px = (groupBox.Width - outWidth) / 2;
+            py = Const.PictureBoxUpperMargin;
 
             return (px, py, outWidth, outHeight);
+        }
+
+        private void SetPictureInPanel(GroupBox groupBox, PictureBox pictureBox, Bitmap bitmap)
+        {
+            (int px, int py, int outWidth, int outHeight) = GetPictureBoxCoords(groupBox, bitmap.Width, bitmap.Height);
+
+            pictureBox.Visible = false;
+            pictureBox.Location = new Point(px, py);
+            pictureBox.Size = new Size(outWidth, outHeight);
+            pictureBox.Image = new Bitmap(bitmap, outWidth, outHeight);
+            pictureBox.Visible = true;
         }
 
         private void InsertColorsToOctree()
@@ -72,12 +107,7 @@ namespace Octree_Color_Quantization_WinForms
 
             if (processedImage != null)
             {
-                (int px, int py, int outWidth, int outHeight) = GetPictureBoxCoords(splitContainer.Panel2,
-                    processedImage.Width, processedImage.Height);
-
-                pictureBoxRight.Location = new Point(px, py);
-                pictureBoxRight.Size = new Size(outWidth, outHeight);
-                pictureBoxRight.Image = new Bitmap(processedImage, outWidth, outHeight);
+                SetPictureInPanel(groupBoxProcessed, pictureBoxProcessed, processedImage);
             }
         }
 
@@ -110,14 +140,8 @@ namespace Octree_Color_Quantization_WinForms
             if (importFileDialog.ShowDialog() == DialogResult.OK)
             {
                 importedImage = new Bitmap(importFileDialog.FileName);
-
-                (int px, int py, int outWidth, int outHeight) = GetPictureBoxCoords(splitContainer.Panel1,
-                    importedImage.Width, importedImage.Height);
-
-                pictureBoxLeft.Location = new Point(px, py);
-                pictureBoxLeft.Size = new Size(outWidth, outHeight);
-                pictureBoxLeft.Image = new Bitmap(importedImage, outWidth, outHeight);
-
+                SetPictureInPanel(groupBoxImported, pictureBoxImported, importedImage);
+                
                 InsertColorsToOctree();
             }
         }

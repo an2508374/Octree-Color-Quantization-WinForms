@@ -11,8 +11,8 @@ namespace Octree_Color_Quantization_WinForms
         public const int ChildCount = 8;
         public const int MaxDepth = 8;
 
-        public const int PictureBoxXMargin = 30;
-        public const int PictureBoxYMargin = 50;
+        public const int PictureBoxLowerMargin = 10;
+        public const int PictureBoxUpperMargin = 25;
     }
 
     public class Node
