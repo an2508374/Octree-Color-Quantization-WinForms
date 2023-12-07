@@ -34,8 +34,14 @@
             groupBoxImported = new GroupBox();
             groupBoxProcessed = new GroupBox();
             groupBoxOptions = new GroupBox();
+            textBoxStepCount = new TextBox();
+            label2 = new Label();
+            textBoxMinColorCount = new TextBox();
+            label1 = new Label();
+            buttonNextStep = new Button();
             panel = new Panel();
             menuStrip.SuspendLayout();
+            groupBoxOptions.SuspendLayout();
             panel.SuspendLayout();
             SuspendLayout();
             // 
@@ -67,6 +73,7 @@
             // groupBoxImported
             // 
             groupBoxImported.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBoxImported.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             groupBoxImported.Location = new Point(0, 31);
             groupBoxImported.Name = "groupBoxImported";
             groupBoxImported.Size = new Size(470, 277);
@@ -77,6 +84,7 @@
             // groupBoxProcessed
             // 
             groupBoxProcessed.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBoxProcessed.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             groupBoxProcessed.Location = new Point(476, 31);
             groupBoxProcessed.Name = "groupBoxProcessed";
             groupBoxProcessed.Size = new Size(470, 277);
@@ -87,12 +95,68 @@
             // groupBoxOptions
             // 
             groupBoxOptions.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBoxOptions.Controls.Add(textBoxStepCount);
+            groupBoxOptions.Controls.Add(label2);
+            groupBoxOptions.Controls.Add(textBoxMinColorCount);
+            groupBoxOptions.Controls.Add(label1);
+            groupBoxOptions.Controls.Add(buttonNextStep);
+            groupBoxOptions.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             groupBoxOptions.Location = new Point(952, 31);
             groupBoxOptions.Name = "groupBoxOptions";
             groupBoxOptions.Size = new Size(470, 277);
             groupBoxOptions.TabIndex = 4;
             groupBoxOptions.TabStop = false;
             groupBoxOptions.Text = "Quantization Options";
+            // 
+            // textBoxStepCount
+            // 
+            textBoxStepCount.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            textBoxStepCount.Location = new Point(224, 59);
+            textBoxStepCount.Name = "textBoxStepCount";
+            textBoxStepCount.Size = new Size(125, 27);
+            textBoxStepCount.TabIndex = 4;
+            textBoxStepCount.TextChanged += TextBoxStepCount_TextChanged;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            label2.Location = new Point(25, 62);
+            label2.Name = "label2";
+            label2.Size = new Size(193, 20);
+            label2.TabIndex = 3;
+            label2.Text = "Number of remaining steps:";
+            // 
+            // textBoxMinColorCount
+            // 
+            textBoxMinColorCount.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            textBoxMinColorCount.Location = new Point(224, 25);
+            textBoxMinColorCount.Name = "textBoxMinColorCount";
+            textBoxMinColorCount.Size = new Size(125, 27);
+            textBoxMinColorCount.TabIndex = 2;
+            textBoxMinColorCount.TextChanged += TextBoxMinColorCount_TextChanged;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Location = new Point(58, 28);
+            label1.Name = "label1";
+            label1.Size = new Size(160, 20);
+            label1.TabIndex = 1;
+            label1.Text = "Final number of colors:";
+            // 
+            // buttonNextStep
+            // 
+            buttonNextStep.Enabled = false;
+            buttonNextStep.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonNextStep.Location = new Point(25, 227);
+            buttonNextStep.Name = "buttonNextStep";
+            buttonNextStep.Size = new Size(147, 29);
+            buttonNextStep.TabIndex = 0;
+            buttonNextStep.Text = "Go To Next Step";
+            buttonNextStep.UseVisualStyleBackColor = true;
+            buttonNextStep.Click += ButtonNextStep_Click;
             // 
             // panel
             // 
@@ -118,6 +182,8 @@
             WindowState = FormWindowState.Maximized;
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
+            groupBoxOptions.ResumeLayout(false);
+            groupBoxOptions.PerformLayout();
             panel.ResumeLayout(false);
             panel.PerformLayout();
             ResumeLayout(false);
@@ -131,5 +197,10 @@
         private GroupBox groupBoxProcessed;
         private GroupBox groupBoxOptions;
         private Panel panel;
+        private Button buttonNextStep;
+        private Label label1;
+        private TextBox textBoxStepCount;
+        private Label label2;
+        private TextBox textBoxMinColorCount;
     }
 }

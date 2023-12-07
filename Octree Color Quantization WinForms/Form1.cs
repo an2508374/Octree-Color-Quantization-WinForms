@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Octree_Color_Quantization_WinForms
 {
@@ -8,6 +12,9 @@ namespace Octree_Color_Quantization_WinForms
         private Bitmap? importedImage;
         private Bitmap? processedImage;
         private Octree ocTree;
+        private int minColorCount;
+        private int currentColorCount;
+        private int stepCount;
 
         private TableLayoutPanel verticalPanel;
         private TableLayoutPanel horizontalPanel;
@@ -54,7 +61,10 @@ namespace Octree_Color_Quantization_WinForms
             horizontalPanel.Controls.Add(groupBoxOptions, 2, 0);
 
             ocTree = new Octree();
-            ocTree.InsertColor(Color.FromArgb(0b00101011, 0b11100011, 0b00011101));
+            minColorCount = Const.minColorCountDefault;
+            stepCount = Const.stepCountDefault;
+            textBoxMinColorCount.Text = minColorCount.ToString();
+            textBoxStepCount.Text = stepCount.ToString();
         }
 
         private (int, int, int, int) GetPictureBoxCoords(GroupBox groupBox, int inWidth, int inHeight)
@@ -101,14 +111,14 @@ namespace Octree_Color_Quantization_WinForms
             ocTree.UpdateFieldsRec(ocTree.Root, 0);
 
             // below elements are there only for tests
-            ocTree.UpdateTree(256); // hardcoded magic number
-            ocTree.UpdatePalette();
-            UpdateProcessedImage();
+            //ocTree.UpdateTree(256); // hardcoded magic number
+            //ocTree.UpdatePalette();
+            //UpdateProcessedImage();
 
-            if (processedImage != null)
-            {
-                SetPictureInPanel(groupBoxProcessed, pictureBoxProcessed, processedImage);
-            }
+            //if (processedImage != null)
+            //{
+            //    SetPictureInPanel(groupBoxProcessed, pictureBoxProcessed, processedImage);
+            //}
         }
 
         private void UpdateProcessedImage()
@@ -143,12 +153,77 @@ namespace Octree_Color_Quantization_WinForms
                 SetPictureInPanel(groupBoxImported, pictureBoxImported, importedImage);
                 
                 InsertColorsToOctree();
+                groupBoxImported.Text = $"Imported Image ({ocTree.LeafCount} colors)";
+                buttonNextStep.Enabled = true;
             }
         }
 
         private void ExportPictureMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void ButtonNextStep_Click(object sender, EventArgs e)
+        {
+            UpdateCurrentColorCount();
+            ocTree.UpdateTree(currentColorCount);
+            ocTree.UpdatePalette();
+            UpdateProcessedImage();
+
+            if (processedImage != null)
+            {
+                SetPictureInPanel(groupBoxProcessed, pictureBoxProcessed, processedImage);
+            }
+
+            --stepCount;
+            textBoxStepCount.Text = stepCount.ToString();
+            groupBoxProcessed.Text = $"Processed Image ({ocTree.LeafCount} colors)";
+
+            if (stepCount <= 0)
+            {
+                buttonNextStep.Enabled = false;
+            }
+        }
+
+        private void UpdateCurrentColorCount()
+        {
+            if (stepCount <= 0 || ocTree.LeafCount <= 0)
+            {
+                return;
+            }
+
+            currentColorCount = ocTree.LeafCount;
+            currentColorCount -= (ocTree.LeafCount - minColorCount) / stepCount;
+        }
+
+        private int UpdateDataFromTextBox(TextBox textBox, int updatedValue)
+        {
+            int result = updatedValue;
+
+            if (System.Text.RegularExpressions.Regex.IsMatch(textBox.Text, "[^0-9]"))
+            {
+                MessageBox.Show("This field must be an integer number.");
+                textBox.Text = textBox.Text.Remove(textBox.Text.Length - 1);
+            }
+
+            if (textBox.Text.Length > 0 && !Int32.TryParse(textBox.Text, out result))
+            {
+                MessageBox.Show("This field must be an integer number.");
+            }
+
+            return result;
+        }
+
+        private void TextBoxMinColorCount_TextChanged(object sender, EventArgs e)
+        {
+            minColorCount = UpdateDataFromTextBox(textBoxMinColorCount, minColorCount);
+            UpdateCurrentColorCount();
+        }
+
+        private void TextBoxStepCount_TextChanged(object sender, EventArgs e)
+        {
+            stepCount = UpdateDataFromTextBox(textBoxStepCount, stepCount);
+            UpdateCurrentColorCount();
         }
     }
 }

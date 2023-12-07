@@ -10,6 +10,8 @@ namespace Octree_Color_Quantization_WinForms
     {
         public const int ChildCount = 8;
         public const int MaxDepth = 8;
+        public const int minColorCountDefault = 256;
+        public const int stepCountDefault = 10;
 
         public const int PictureBoxLowerMargin = 10;
         public const int PictureBoxUpperMargin = 25;
@@ -177,6 +179,7 @@ namespace Octree_Color_Quantization_WinForms
 
         public void UpdatePalette()
         {
+            PaletteLength = 0;
             Palette.Clear();
             UpdatePaletteRec(Root);
         }
