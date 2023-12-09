@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,6 +53,7 @@ namespace Octree_Color_Quantization_WinForms
             panel.Controls.Add(verticalPanel);
             verticalPanel.Controls.Add(menuStrip, 0, 0);
             verticalPanel.Controls.Add(horizontalPanel, 0, 1);
+            verticalPanel.Controls.Add(groupBoxVisualization, 0, 2);
 
             verticalPanel.Dock = DockStyle.Fill;
             horizontalPanel.Dock = DockStyle.Fill;
@@ -145,7 +147,7 @@ namespace Octree_Color_Quantization_WinForms
             using OpenFileDialog importFileDialog = new OpenFileDialog();
 
             importFileDialog.Title = "Import Image";
-            importFileDialog.Filter = "bmp files (*.bmp)|*.bmp";
+            importFileDialog.Filter = "Image Files (*.bmp;*.jpg;*.jpeg,*.png)|*.BMP;*.JPG;*.JPEG;*.PNG";
 
             if (importFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -160,7 +162,32 @@ namespace Octree_Color_Quantization_WinForms
 
         private void ExportPictureMenuItem_Click(object sender, EventArgs e)
         {
+            using SaveFileDialog exportFileDialog = new SaveFileDialog();
 
+            exportFileDialog.Title = "Export Image";
+            exportFileDialog.Filter = "Image Files (*.bmp;*.jpg;*.jpeg,*.png)|*.BMP;*.JPG;*.JPEG;*.PNG";
+
+            ImageFormat imageFormat = ImageFormat.Jpeg;
+
+            if (exportFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string extension = System.IO.Path.GetExtension(exportFileDialog.FileName);
+
+                switch (extension)
+                {
+                    case ".bmp": case ".BMP":
+                        imageFormat = ImageFormat.Bmp;
+                        break;
+                    case ".png": case ".PNG":
+                        imageFormat = ImageFormat.Png;
+                        break;
+                }
+
+                if (processedImage != null)
+                {
+                    processedImage.Save(exportFileDialog.FileName, imageFormat);
+                }
+            }
         }
 
         private void ButtonNextStep_Click(object sender, EventArgs e)
@@ -202,13 +229,13 @@ namespace Octree_Color_Quantization_WinForms
 
             if (System.Text.RegularExpressions.Regex.IsMatch(textBox.Text, "[^0-9]"))
             {
-                MessageBox.Show("This field must be an integer number.");
+                MessageBox.Show("This field must be an integer number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBox.Text = textBox.Text.Remove(textBox.Text.Length - 1);
             }
 
             if (textBox.Text.Length > 0 && !Int32.TryParse(textBox.Text, out result))
             {
-                MessageBox.Show("This field must be an integer number.");
+                MessageBox.Show("This field must be an integer number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return result;

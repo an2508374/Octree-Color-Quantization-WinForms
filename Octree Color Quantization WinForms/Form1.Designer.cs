@@ -32,6 +32,7 @@
             importPictureMenuItem = new ToolStripMenuItem();
             exportPictureMenuItem = new ToolStripMenuItem();
             groupBoxImported = new GroupBox();
+            groupBoxVisualization = new GroupBox();
             groupBoxProcessed = new GroupBox();
             groupBoxOptions = new GroupBox();
             textBoxStepCount = new TextBox();
@@ -41,6 +42,7 @@
             buttonNextStep = new Button();
             panel = new Panel();
             menuStrip.SuspendLayout();
+            groupBoxImported.SuspendLayout();
             groupBoxOptions.SuspendLayout();
             panel.SuspendLayout();
             SuspendLayout();
@@ -73,6 +75,7 @@
             // groupBoxImported
             // 
             groupBoxImported.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBoxImported.Controls.Add(groupBoxVisualization);
             groupBoxImported.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             groupBoxImported.Location = new Point(0, 31);
             groupBoxImported.Name = "groupBoxImported";
@@ -80,6 +83,17 @@
             groupBoxImported.TabIndex = 2;
             groupBoxImported.TabStop = false;
             groupBoxImported.Text = "Imported Image";
+            // 
+            // groupBoxVisualization
+            // 
+            groupBoxVisualization.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBoxVisualization.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            groupBoxVisualization.Location = new Point(3, 283);
+            groupBoxVisualization.Name = "groupBoxVisualization";
+            groupBoxVisualization.Size = new Size(1416, 449);
+            groupBoxVisualization.TabIndex = 6;
+            groupBoxVisualization.TabStop = false;
+            groupBoxVisualization.Text = "Octree Visualization";
             // 
             // groupBoxProcessed
             // 
@@ -182,6 +196,7 @@
             WindowState = FormWindowState.Maximized;
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
+            groupBoxImported.ResumeLayout(false);
             groupBoxOptions.ResumeLayout(false);
             groupBoxOptions.PerformLayout();
             panel.ResumeLayout(false);
@@ -202,5 +217,6 @@
         private TextBox textBoxStepCount;
         private Label label2;
         private TextBox textBoxMinColorCount;
+        private GroupBox groupBoxVisualization;
     }
 }
