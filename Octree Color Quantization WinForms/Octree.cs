@@ -15,6 +15,11 @@ namespace Octree_Color_Quantization_WinForms
 
         public const int pictureBoxLowerMargin = 10;
         public const int pictureBoxUpperMargin = 25;
+        public const int visualizationImageMaxWidth = 19000;
+        public const int visualizationImageMaxXStep = 30;
+        public const int visualizationMargin = 20;
+        public const int nodeRadius = 7;
+        public const int lineThickness = 3;
     }
 
     public class Node
@@ -162,7 +167,7 @@ namespace Octree_Color_Quantization_WinForms
 
                     Node minNode = pQueue.Dequeue();
 
-                    for (int j = 0; j < Const.childCount; ++j)
+                    for (int j = 0; j < minNode.Children.Length; ++j)
                     {
                         if (minNode.Children[j] != null)
                         {
@@ -184,7 +189,7 @@ namespace Octree_Color_Quantization_WinForms
             UpdatePaletteRec(Root);
         }
 
-        public void UpdatePaletteRec(Node? node)
+        private void UpdatePaletteRec(Node? node)
         {
             if (node == null)
             {

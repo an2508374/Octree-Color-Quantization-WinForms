@@ -12,6 +12,7 @@ namespace Octree_Color_Quantization_WinForms
     {
         private Bitmap? importedImage;
         private Bitmap? processedImage;
+        private Bitmap? visualizationImage;
         private Octree ocTree;
         private int minColorCount;
         private int currentColorCount;
@@ -19,6 +20,8 @@ namespace Octree_Color_Quantization_WinForms
 
         private TableLayoutPanel verticalPanel = new TableLayoutPanel();
         private TableLayoutPanel horizontalPanel = new TableLayoutPanel();
+        private Panel panelVisualization = new Panel();
+        private PictureBox pictureBoxVisualization = new PictureBox();
         private PictureBox pictureBoxImported = new PictureBox();
         private PictureBox pictureBoxProcessed = new PictureBox();
 
@@ -58,14 +61,17 @@ namespace Octree_Color_Quantization_WinForms
             horizontalPanel.Controls.Add(groupBoxProcessed, 1, 0);
             horizontalPanel.Controls.Add(groupBoxOptions, 2, 0);
 
+            groupBoxVisualization.Controls.Add(panelVisualization);
+            panelVisualization.Dock = DockStyle.Fill;
+            panelVisualization.AutoScroll = true;
+            panelVisualization.Controls.Add(pictureBoxVisualization);
+
             ocTree = new Octree();
             minColorCount = Const.minColorCountDefault;
             stepCount = Const.stepCountDefault;
             textBoxMinColorCount.Text = minColorCount.ToString();
             textBoxStepCount.Text = stepCount.ToString();
         }
-
-
 
         private void InsertColorsToOctree()
         {
@@ -85,16 +91,6 @@ namespace Octree_Color_Quantization_WinForms
             }
 
             ocTree.UpdateFieldsRec(ocTree.Root, 0);
-
-            // below elements are there only for tests
-            //ocTree.UpdateTree(256); // hardcoded magic number
-            //ocTree.UpdatePalette();
-            //UpdateProcessedImage();
-
-            //if (processedImage != null)
-            //{
-            //    SetPictureInPanel(groupBoxProcessed, pictureBoxProcessed, processedImage);
-            //}
         }
 
         private void UpdateProcessedImage()
@@ -115,6 +111,39 @@ namespace Octree_Color_Quantization_WinForms
                     processedImage.SetPixel(i, j, ocTree.Palette[paletteIndex]);
                 }
             }
+
+            PictureSetter.SetPictureInPanel(groupBoxProcessed.Width, groupBoxProcessed.Height,
+                pictureBoxProcessed, processedImage);
+        }
+
+        private void UpdateVisualizationImage()
+        {
+            if (importedImage == null)
+            {
+                return;
+            }
+
+            int visualizationImageWidth = Const.visualizationImageMaxWidth;
+            int visualizationImageHeight = panelVisualization.Height - Const.pictureBoxUpperMargin;
+            double xStep = ((double)visualizationImageWidth - (2 * Const.visualizationMargin)) / ocTree.LeafCount;
+            if (xStep > Const.visualizationImageMaxXStep)
+            {
+                xStep = Const.visualizationImageMaxXStep;
+                visualizationImageWidth = (int)xStep * ocTree.LeafCount + 2 * Const.visualizationMargin;
+            }
+
+            visualizationImage?.Dispose();
+            visualizationImage = new Bitmap(visualizationImageWidth, visualizationImageHeight);
+
+            int verticalStep = visualizationImage.Height / (Const.maxDepth + 1);
+            OctreeDrawer ocTreeDrawer = new OctreeDrawer(ocTree, visualizationImage);
+            ocTreeDrawer.DrawTreeOnBitmap(xStep, verticalStep / 2, verticalStep);
+
+            pictureBoxVisualization.Location = new Point(0, 0);
+            pictureBoxVisualization.Size = new Size(visualizationImageWidth, visualizationImageHeight);
+
+            pictureBoxVisualization.Image?.Dispose();
+            pictureBoxVisualization.Image = visualizationImage;
         }
 
         private void ImportPictureMenuItem_Click(object sender, EventArgs e)
@@ -122,13 +151,14 @@ namespace Octree_Color_Quantization_WinForms
             using OpenFileDialog importFileDialog = new OpenFileDialog();
 
             importFileDialog.Title = "Import Image";
-            importFileDialog.Filter = "Image Files (*.bmp;*.jpg;*.jpeg,*.png)|*.BMP;*.JPG;*.JPEG;*.PNG";
+            importFileDialog.Filter = "Image Files (*.bmp;*.jpg;*.jpeg;*.png)|*.BMP;*.JPG;*.JPEG;*.PNG";
 
             if (importFileDialog.ShowDialog() == DialogResult.OK)
             {
                 importedImage?.Dispose();
                 importedImage = new Bitmap(importFileDialog.FileName);
-                PictureSetter.SetPictureInPanel(groupBoxImported, pictureBoxImported, importedImage);
+                PictureSetter.SetPictureInPanel(groupBoxImported.Width, groupBoxImported.Height,
+                    pictureBoxImported, importedImage);
 
                 pictureBoxProcessed.Image?.Dispose();
                 pictureBoxProcessed.Image = null;
@@ -140,6 +170,9 @@ namespace Octree_Color_Quantization_WinForms
                 InsertColorsToOctree();
                 groupBoxImported.Text = $"Imported Image ({ocTree.LeafCount} colors)";
                 buttonNextStep.Enabled = true;
+
+                ocTree.UpdatePalette();
+                UpdateVisualizationImage();
             }
         }
 
@@ -148,7 +181,7 @@ namespace Octree_Color_Quantization_WinForms
             using SaveFileDialog exportFileDialog = new SaveFileDialog();
 
             exportFileDialog.Title = "Export Image";
-            exportFileDialog.Filter = "Image Files (*.bmp;*.jpg;*.jpeg,*.png)|*.BMP;*.JPG;*.JPEG;*.PNG";
+            exportFileDialog.Filter = "Image Files (*.bmp;*.jpg;*.jpeg;*.png)|*.BMP;*.JPG;*.JPEG;*.PNG";
 
             ImageFormat imageFormat = ImageFormat.Jpeg;
 
@@ -182,19 +215,16 @@ namespace Octree_Color_Quantization_WinForms
             ocTree.UpdatePalette();
             UpdateProcessedImage();
 
-            if (processedImage != null)
-            {
-                PictureSetter.SetPictureInPanel(groupBoxProcessed, pictureBoxProcessed, processedImage);
-            }
-
             --stepCount;
             textBoxStepCount.Text = stepCount.ToString();
             groupBoxProcessed.Text = $"Processed Image ({ocTree.LeafCount} colors)";
-
+            
             if (stepCount <= 0)
             {
                 buttonNextStep.Enabled = false;
             }
+
+            UpdateVisualizationImage();
         }
 
         private void UpdateCurrentColorCount()
