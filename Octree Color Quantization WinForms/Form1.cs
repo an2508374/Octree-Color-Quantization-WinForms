@@ -17,24 +17,21 @@ namespace Octree_Color_Quantization_WinForms
         private int currentColorCount;
         private int stepCount;
 
-        private TableLayoutPanel verticalPanel;
-        private TableLayoutPanel horizontalPanel;
-        private PictureBox pictureBoxImported;
-        private PictureBox pictureBoxProcessed;
+        private TableLayoutPanel verticalPanel = new TableLayoutPanel();
+        private TableLayoutPanel horizontalPanel = new TableLayoutPanel();
+        private PictureBox pictureBoxImported = new PictureBox();
+        private PictureBox pictureBoxProcessed = new PictureBox();
 
         public Form1()
         {
             InitializeComponent();
 
-            pictureBoxImported = new PictureBox();
             pictureBoxImported.Visible = false;
             groupBoxImported.Controls.Add(pictureBoxImported);
 
-            pictureBoxProcessed = new PictureBox();
             pictureBoxProcessed.Visible = false;
             groupBoxProcessed.Controls.Add(pictureBoxProcessed);
 
-            verticalPanel = new TableLayoutPanel();
             verticalPanel.ColumnCount = 1;
             verticalPanel.RowCount = 3;
             verticalPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
@@ -42,7 +39,6 @@ namespace Octree_Color_Quantization_WinForms
             verticalPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 38F));
             verticalPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 62F));
 
-            horizontalPanel = new TableLayoutPanel();
             horizontalPanel.ColumnCount = 3;
             horizontalPanel.RowCount = 1;
             horizontalPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
@@ -69,29 +65,7 @@ namespace Octree_Color_Quantization_WinForms
             textBoxStepCount.Text = stepCount.ToString();
         }
 
-        private (int, int, int, int) GetPictureBoxCoords(GroupBox groupBox, int inWidth, int inHeight)
-        {
-            int px, py, outWidth, outHeight;
 
-            outHeight = groupBox.Height - Const.PictureBoxLowerMargin - Const.PictureBoxUpperMargin;
-            outWidth = (int)((double)outHeight / inHeight * inWidth);
-
-            px = (groupBox.Width - outWidth) / 2;
-            py = Const.PictureBoxUpperMargin;
-
-            return (px, py, outWidth, outHeight);
-        }
-
-        private void SetPictureInPanel(GroupBox groupBox, PictureBox pictureBox, Bitmap bitmap)
-        {
-            (int px, int py, int outWidth, int outHeight) = GetPictureBoxCoords(groupBox, bitmap.Width, bitmap.Height);
-
-            pictureBox.Visible = false;
-            pictureBox.Location = new Point(px, py);
-            pictureBox.Size = new Size(outWidth, outHeight);
-            pictureBox.Image = new Bitmap(bitmap, outWidth, outHeight);
-            pictureBox.Visible = true;
-        }
 
         private void InsertColorsToOctree()
         {
@@ -152,8 +126,8 @@ namespace Octree_Color_Quantization_WinForms
             if (importFileDialog.ShowDialog() == DialogResult.OK)
             {
                 importedImage = new Bitmap(importFileDialog.FileName);
-                SetPictureInPanel(groupBoxImported, pictureBoxImported, importedImage);
-                
+                PictureSetter.SetPictureInPanel(groupBoxImported, pictureBoxImported, importedImage);
+
                 InsertColorsToOctree();
                 groupBoxImported.Text = $"Imported Image ({ocTree.LeafCount} colors)";
                 buttonNextStep.Enabled = true;
@@ -175,10 +149,12 @@ namespace Octree_Color_Quantization_WinForms
 
                 switch (extension)
                 {
-                    case ".bmp": case ".BMP":
+                    case ".bmp":
+                    case ".BMP":
                         imageFormat = ImageFormat.Bmp;
                         break;
-                    case ".png": case ".PNG":
+                    case ".png":
+                    case ".PNG":
                         imageFormat = ImageFormat.Png;
                         break;
                 }
@@ -199,7 +175,7 @@ namespace Octree_Color_Quantization_WinForms
 
             if (processedImage != null)
             {
-                SetPictureInPanel(groupBoxProcessed, pictureBoxProcessed, processedImage);
+                PictureSetter.SetPictureInPanel(groupBoxProcessed, pictureBoxProcessed, processedImage);
             }
 
             --stepCount;
