@@ -12,11 +12,11 @@ namespace Octree_Color_Quantization_WinForms
         {
             int px, py, outWidth, outHeight;
 
-            outHeight = groupBox.Height - Const.PictureBoxLowerMargin - Const.PictureBoxUpperMargin;
+            outHeight = groupBox.Height - Const.pictureBoxLowerMargin - Const.pictureBoxUpperMargin;
             outWidth = (int)((double)outHeight / inHeight * inWidth);
 
             px = (groupBox.Width - outWidth) / 2;
-            py = Const.PictureBoxUpperMargin;
+            py = Const.pictureBoxUpperMargin;
 
             return (px, py, outWidth, outHeight);
         }
@@ -24,6 +24,8 @@ namespace Octree_Color_Quantization_WinForms
         public static void SetPictureInPanel(GroupBox groupBox, PictureBox pictureBox, Bitmap bitmap)
         {
             (int px, int py, int outWidth, int outHeight) = GetPictureBoxCoords(groupBox, bitmap.Width, bitmap.Height);
+
+            pictureBox.Image?.Dispose();
 
             pictureBox.Visible = false;
             pictureBox.Location = new Point(px, py);

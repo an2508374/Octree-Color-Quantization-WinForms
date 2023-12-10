@@ -8,13 +8,13 @@ namespace Octree_Color_Quantization_WinForms
 {
     public static class Const
     {
-        public const int ChildCount = 8;
-        public const int MaxDepth = 8;
+        public const int childCount = 8;
+        public const int maxDepth = 8;
         public const int minColorCountDefault = 256;
         public const int stepCountDefault = 10;
 
-        public const int PictureBoxLowerMargin = 10;
-        public const int PictureBoxUpperMargin = 25;
+        public const int pictureBoxLowerMargin = 10;
+        public const int pictureBoxUpperMargin = 25;
     }
 
     public class Node
@@ -33,7 +33,7 @@ namespace Octree_Color_Quantization_WinForms
             Red = 0;
             Green = 0;
             Blue = 0;
-            Children = new Node[Const.ChildCount];
+            Children = new Node[Const.childCount];
         }
     }
 
@@ -48,7 +48,7 @@ namespace Octree_Color_Quantization_WinForms
         public Octree()
         {
             Root = new Node();
-            Levels = new PriorityQueue<Node, ulong>[Const.MaxDepth];
+            Levels = new PriorityQueue<Node, ulong>[Const.maxDepth];
             LeafCount = 0;
             Palette = new List<Color>();
             PaletteLength = 0;
@@ -88,7 +88,7 @@ namespace Octree_Color_Quantization_WinForms
             Node lastNode = Root;
             Node? nextNode;
 
-            for (int i = 0; i < Const.MaxDepth; ++i)
+            for (int i = 0; i < Const.maxDepth; ++i)
             {
                 index = GetColorIndex(color, i);
 
@@ -162,7 +162,7 @@ namespace Octree_Color_Quantization_WinForms
 
                     Node minNode = pQueue.Dequeue();
 
-                    for (int j = 0; j < Const.ChildCount; ++j)
+                    for (int j = 0; j < Const.childCount; ++j)
                     {
                         if (minNode.Children[j] != null)
                         {

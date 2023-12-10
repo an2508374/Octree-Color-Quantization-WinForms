@@ -104,6 +104,7 @@ namespace Octree_Color_Quantization_WinForms
                 return;
             }
 
+            processedImage?.Dispose();
             processedImage = new Bitmap(importedImage.Width, importedImage.Height);
 
             for (int i = 0; i < importedImage.Width; ++i)
@@ -125,8 +126,16 @@ namespace Octree_Color_Quantization_WinForms
 
             if (importFileDialog.ShowDialog() == DialogResult.OK)
             {
+                importedImage?.Dispose();
                 importedImage = new Bitmap(importFileDialog.FileName);
                 PictureSetter.SetPictureInPanel(groupBoxImported, pictureBoxImported, importedImage);
+
+                pictureBoxProcessed.Image?.Dispose();
+                pictureBoxProcessed.Image = null;
+
+                stepCount = Const.stepCountDefault;
+                textBoxStepCount.Text = stepCount.ToString();
+                groupBoxProcessed.Text = "Processed Image";
 
                 InsertColorsToOctree();
                 groupBoxImported.Text = $"Imported Image ({ocTree.LeafCount} colors)";
