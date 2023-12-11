@@ -18,8 +18,8 @@ namespace Octree_Color_Quantization_WinForms
         public const int visualizationImageMaxWidth = 19000;
         public const int visualizationImageMaxXStep = 30;
         public const int visualizationMargin = 20;
-        public const int nodeRadius = 7;
-        public const int lineThickness = 3;
+        public const int nodeRadius = 8;
+        public const int lineThickness = 1;
     }
 
     public class Node
@@ -31,6 +31,8 @@ namespace Octree_Color_Quantization_WinForms
         public Node?[] Children { get; set; }
         public bool IsLeaf { get; set; }
         public int PaletteIndex { get; set; }
+        public int BitmapX { get; set; }
+        public int BitmapY { get; set; }
 
         public Node()
         {

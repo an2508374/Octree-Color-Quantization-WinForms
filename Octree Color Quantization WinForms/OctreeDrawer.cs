@@ -36,11 +36,13 @@ namespace Octree_Color_Quantization_WinForms
             XStep = xStep;
             YStep = yStep;
             XLastLeaf = Const.visualizationMargin;
-            DrawTreeRec(Octree.Root, yBegin);
+            FindTreeNodesCoordsRec(Octree.Root, yBegin);
+            DrawTreeEdgesRec(Octree.Root);
+            DrawTreeNodesRec(Octree.Root);
             Graphics.Dispose();
         }
 
-        private int DrawTreeRec(Node node, int yValue)
+        private int FindTreeNodesCoordsRec(Node node, int yValue)
         {
             int xValue;
 
@@ -48,7 +50,9 @@ namespace Octree_Color_Quantization_WinForms
             {
                 xValue = (int)XLastLeaf;
                 XLastLeaf += XStep;
-                FillCircle(node, new Point(xValue, yValue), Const.nodeRadius);
+
+                node.BitmapX = xValue;
+                node.BitmapY = yValue;
 
                 return xValue;
             }
@@ -62,9 +66,7 @@ namespace Octree_Color_Quantization_WinForms
                 if (child != null)
                 {
                     int yChild = yValue + YStep;
-                    int xChild = DrawTreeRec(child, yChild);
-
-                    //Graphics.DrawLine(Pen, new Point(xValue, yValue), new Point(xChild, yChild));
+                    int xChild = FindTreeNodesCoordsRec(child, yChild);
 
                     if (xChild < xMin)
                     {
@@ -79,9 +81,48 @@ namespace Octree_Color_Quantization_WinForms
             }
 
             xValue = (xMin + xMax) / 2;
-            FillCircle(node, new Point(xValue, yValue), Const.nodeRadius);
+
+            node.BitmapX = xValue;
+            node.BitmapY = yValue;
 
             return xValue;
+        }
+
+        private void DrawTreeEdgesRec(Node node)
+        {
+            if (node.IsLeaf)
+            {
+                return;
+            }
+
+            for (int i = 0; i < node.Children.Length; ++i)
+            {
+                Node? child = node.Children[i];
+                if (child != null)
+                {
+                    DrawTreeEdgesRec(child);
+                    Graphics.DrawLine(Pen, new Point(node.BitmapX, node.BitmapY), new Point(child.BitmapX, child.BitmapY));
+                }
+            }
+        }
+
+        private void DrawTreeNodesRec(Node node)
+        {
+            if (node.IsLeaf)
+            {
+                FillCircle(node, new Point(node.BitmapX, node.BitmapY), Const.nodeRadius);
+            }
+
+            for (int i = 0; i < node.Children.Length; ++i)
+            {
+                Node? child = node.Children[i];
+                if (child != null)
+                {
+                    DrawTreeNodesRec(child);
+                }
+            }
+
+            FillCircle(node, new Point(node.BitmapX, node.BitmapY), Const.nodeRadius);
         }
     }
 }
