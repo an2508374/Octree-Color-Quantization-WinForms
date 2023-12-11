@@ -198,15 +198,15 @@ namespace Octree_Color_Quantization_WinForms
                 return;
             }
 
+            int red = (int)(node.Red / node.References);
+            int green = (int)(node.Green / node.References);
+            int blue = (int)(node.Blue / node.References);
+
+            Palette.Add(Color.FromArgb(255, red, green, blue));
+            node.PaletteIndex = PaletteLength++;
+
             if (node.IsLeaf)
             {
-                int red = (int)(node.Red / node.References);
-                int green = (int)(node.Green / node.References);
-                int blue = (int)(node.Blue / node.References);
-
-                Palette.Add(Color.FromArgb(255, red, green, blue));
-                node.PaletteIndex = PaletteLength++;
-
                 return;
             }
 

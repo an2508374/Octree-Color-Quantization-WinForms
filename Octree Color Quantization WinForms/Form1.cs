@@ -116,8 +116,18 @@ namespace Octree_Color_Quantization_WinForms
                 pictureBoxProcessed, processedImage);
         }
 
+        public void ScrollToLeft(Panel panel)
+        {
+            using (Control control = new Control() { Parent = panel, Dock = DockStyle.Left })
+            {
+                panel.ScrollControlIntoView(control);
+                control.Parent = null;
+            }
+        }
+
         private void UpdateVisualizationImage()
         {
+            ScrollToLeft(panelVisualization);
             if (importedImage == null)
             {
                 return;
@@ -173,6 +183,7 @@ namespace Octree_Color_Quantization_WinForms
 
                 ocTree.UpdatePalette();
                 UpdateVisualizationImage();
+                groupBoxVisualization.Text = "Octree Visualization (For Imported Image)";
             }
         }
 
@@ -212,7 +223,7 @@ namespace Octree_Color_Quantization_WinForms
         {
             UpdateCurrentColorCount();
             ocTree.UpdateTree(currentColorCount);
-            ocTree.UpdatePalette();
+            //ocTree.UpdatePalette();
             UpdateProcessedImage();
 
             --stepCount;
@@ -225,6 +236,7 @@ namespace Octree_Color_Quantization_WinForms
             }
 
             UpdateVisualizationImage();
+            groupBoxVisualization.Text = "Octree Visualization (For Processed Image)";
         }
 
         private void UpdateCurrentColorCount()
