@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -160,6 +161,30 @@ namespace Octree_Color_Quantization_WinForms
             pictureBoxVisualization.Image = visualizationImage;
         }
 
+        private void LoadGeneratedPicture(Bitmap bitmap)
+        {
+            importedImage?.Dispose();
+            importedImage = bitmap;
+            PictureSetter.SetPictureInPanel(groupBoxImported.Width, groupBoxImported.Height,
+                pictureBoxImported, importedImage);
+
+            pictureBoxProcessed.Image?.Dispose();
+            pictureBoxProcessed.Image = null;
+
+            linearStepGenerator.Reset();
+            exponentialStepGenerator.Reset();
+            textBoxOption.Text = stepGenerator.GetTextBoxOption();
+            groupBoxProcessed.Text = "Processed Image";
+
+            InsertColorsToOctree();
+            groupBoxImported.Text = $"Imported Image ({ocTree.LeafCount} colors)";
+
+            ocTree.UpdatePalette();
+            UpdateVisualizationImage();
+            groupBoxVisualization.Text = "Octree Visualization (For Imported Image)";
+            buttonNextStep.Enabled = true;
+        }
+
         private void ImportPictureMenuItem_Click(object sender, EventArgs e)
         {
             using OpenFileDialog importFileDialog = new OpenFileDialog();
@@ -169,26 +194,7 @@ namespace Octree_Color_Quantization_WinForms
 
             if (importFileDialog.ShowDialog() == DialogResult.OK)
             {
-                importedImage?.Dispose();
-                importedImage = new Bitmap(importFileDialog.FileName);
-                PictureSetter.SetPictureInPanel(groupBoxImported.Width, groupBoxImported.Height,
-                    pictureBoxImported, importedImage);
-
-                pictureBoxProcessed.Image?.Dispose();
-                pictureBoxProcessed.Image = null;
-
-                linearStepGenerator.Reset();
-                exponentialStepGenerator.Reset();
-                textBoxOption.Text = stepGenerator.GetTextBoxOption();
-                groupBoxProcessed.Text = "Processed Image";
-
-                InsertColorsToOctree();
-                groupBoxImported.Text = $"Imported Image ({ocTree.LeafCount} colors)";
-
-                ocTree.UpdatePalette();
-                UpdateVisualizationImage();
-                groupBoxVisualization.Text = "Octree Visualization (For Imported Image)";
-                buttonNextStep.Enabled = true;
+                LoadGeneratedPicture(new Bitmap(importFileDialog.FileName));
             }
         }
 
@@ -226,11 +232,11 @@ namespace Octree_Color_Quantization_WinForms
 
         private void ButtonNextStep_Click(object sender, EventArgs e)
         {
+            stepGenerator.UpdateOptionAfterStep();
             UpdateCurrentColorCount();
             ocTree.UpdateTree(currentColorCount);
             UpdateProcessedImage();
 
-            stepGenerator.UpdateOptionAfterStep();
             textBoxOption.Text = stepGenerator.GetTextBoxOption();
             groupBoxProcessed.Text = $"Processed Image ({ocTree.LeafCount} colors)";
 
@@ -291,6 +297,126 @@ namespace Octree_Color_Quantization_WinForms
             stepGenerator = exponentialStepGenerator;
             labelOption.Text = stepGenerator.GetLabelOption();
             textBoxOption.Text = stepGenerator.GetTextBoxOption();
+        }
+
+        private void Generate1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bitmap bitmap = new Bitmap(Const.defaultGenerateWidth, Const.defaultGenerateHeight);
+            Color[,] colors = new Color[4, 2];
+
+            colors[0, 0] = Color.FromArgb(255, 0, 0, 0);
+            colors[1, 0] = Color.FromArgb(255, 255, 0, 0);
+            colors[2, 0] = Color.FromArgb(255, 0, 255, 0);
+            colors[3, 0] = Color.FromArgb(255, 0, 0, 255);
+            colors[0, 1] = Color.FromArgb(255, 255, 255, 255);
+            colors[1, 1] = Color.FromArgb(255, 0, 255, 255);
+            colors[2, 1] = Color.FromArgb(255, 255, 0, 255);
+            colors[3, 1] = Color.FromArgb(255, 255, 255, 0);
+
+            for (int i = 0; i < bitmap.Width; ++i)
+            {
+                for (int j = 0; j < bitmap.Height; ++j)
+                {
+                    int x = (int)Math.Floor((double)(4 * i) / bitmap.Width);
+                    int y = (int)Math.Floor((double)(2 * j) / bitmap.Height);
+                    bitmap.SetPixel(i, j, colors[x, y]);
+                }
+            }
+
+            LoadGeneratedPicture(bitmap);
+        }
+
+        private void Generate2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bitmap bitmap = new Bitmap(Const.defaultGenerateWidth, Const.defaultGenerateHeight);
+
+            for (int i = 0; i < bitmap.Width; ++i)
+            {
+                for (int j = 0; j < bitmap.Height; ++j)
+                {
+                    int x = (255 * i) / bitmap.Width;
+                    int y = (255 * j) / bitmap.Height;
+                    y = 255 - y;
+
+                    RgbColor rgb = HsvToRgb(new HsvColor(x, y, 255));
+                    bitmap.SetPixel(i, j, Color.FromArgb(255, rgb.r, rgb.g, rgb.b));
+                }
+            }
+
+            LoadGeneratedPicture(bitmap);
+        }
+
+        public struct RgbColor
+        {
+            public int r;
+            public int g;
+            public int b;
+
+            public RgbColor(int r, int g, int b)
+            {
+                this.r = r;
+                this.g = g;
+                this.b = b;
+            }
+        }
+
+        public struct HsvColor
+        {
+            public int h;
+            public int s;
+            public int v;
+
+            public HsvColor(int h, int s, int v)
+            {
+                this.h = h;
+                this.s = s;
+                this.v = v;
+            }
+        }
+
+        RgbColor HsvToRgb(HsvColor hsv)
+        {
+            RgbColor rgb;
+            int region, remainder, p, q, t;
+
+            if (hsv.s == 0)
+            {
+                rgb.r = hsv.v;
+                rgb.g = hsv.v;
+                rgb.b = hsv.v;
+                return rgb;
+            }
+
+            region = hsv.h / 43;
+            remainder = (hsv.h - (region * 43)) * 6;
+
+            p = (hsv.v * (255 - hsv.s)) >> 8;
+            q = (hsv.v * (255 - ((hsv.s * remainder) >> 8))) >> 8;
+            t = (hsv.v * (255 - ((hsv.s * (255 - remainder)) >> 8))) >> 8;
+
+            switch (region)
+            {
+                case 0:
+                    rgb.r = hsv.v; rgb.g = t; rgb.b = p;
+                    break;
+                case 1:
+                    rgb.r = q; rgb.g = hsv.v; rgb.b = p;
+                    break;
+                case 2:
+                    rgb.r = p; rgb.g = hsv.v; rgb.b = t;
+                    break;
+                case 3:
+                    rgb.r = p; rgb.g = q; rgb.b = hsv.v;
+                    break;
+                case 4:
+                    rgb.r = t; rgb.g = p; rgb.b = hsv.v;
+                    break;
+                default:
+                    rgb.r = hsv.v; rgb.g = p; rgb.b = q;
+                    break;
+            }
+
+            return rgb;
         }
     }
 }

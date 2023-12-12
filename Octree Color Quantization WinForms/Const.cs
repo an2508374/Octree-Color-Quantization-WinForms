@@ -21,5 +21,8 @@ namespace Octree_Color_Quantization_WinForms
         public const int visualizationMargin = 20;
         public const int nodeRadius = 8;
         public const int lineThickness = 1;
+
+        public const int defaultGenerateWidth = 1000;
+        public const int defaultGenerateHeight = 1000;
     }
 }

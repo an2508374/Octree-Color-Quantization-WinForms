@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             menuStrip = new MenuStrip();
+            generate1ToolStripMenuItem = new ToolStripMenuItem();
+            generate2ToolStripMenuItem = new ToolStripMenuItem();
             importPictureMenuItem = new ToolStripMenuItem();
             exportPictureMenuItem = new ToolStripMenuItem();
             groupBoxImported = new GroupBox();
@@ -54,12 +56,26 @@
             // 
             menuStrip.Dock = DockStyle.None;
             menuStrip.ImageScalingSize = new Size(20, 20);
-            menuStrip.Items.AddRange(new ToolStripItem[] { importPictureMenuItem, exportPictureMenuItem });
+            menuStrip.Items.AddRange(new ToolStripItem[] { generate1ToolStripMenuItem, generate2ToolStripMenuItem, importPictureMenuItem, exportPictureMenuItem });
             menuStrip.Location = new Point(0, 0);
             menuStrip.Name = "menuStrip";
-            menuStrip.Size = new Size(240, 28);
+            menuStrip.Size = new Size(678, 28);
             menuStrip.TabIndex = 1;
             menuStrip.Text = "menuStrip1";
+            // 
+            // generate1ToolStripMenuItem
+            // 
+            generate1ToolStripMenuItem.Name = "generate1ToolStripMenuItem";
+            generate1ToolStripMenuItem.Size = new Size(144, 24);
+            generate1ToolStripMenuItem.Text = "Generate Picture 1";
+            generate1ToolStripMenuItem.Click += Generate1ToolStripMenuItem_Click;
+            // 
+            // generate2ToolStripMenuItem
+            // 
+            generate2ToolStripMenuItem.Name = "generate2ToolStripMenuItem";
+            generate2ToolStripMenuItem.Size = new Size(144, 24);
+            generate2ToolStripMenuItem.Text = "Generate Picture 2";
+            generate2ToolStripMenuItem.Click += Generate2ToolStripMenuItem_Click;
             // 
             // importPictureMenuItem
             // 
@@ -265,5 +281,7 @@
         private RadioButton radioButtonExponentially;
         private RadioButton radioButtonLinearly;
         private Label label2;
+        private ToolStripMenuItem generate1ToolStripMenuItem;
+        private ToolStripMenuItem generate2ToolStripMenuItem;
     }
 }
