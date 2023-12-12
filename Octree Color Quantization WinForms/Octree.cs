@@ -6,22 +6,6 @@ using System.Threading.Tasks;
 
 namespace Octree_Color_Quantization_WinForms
 {
-    public static class Const
-    {
-        public const int childCount = 8;
-        public const int maxDepth = 8;
-        public const int minColorCountDefault = 256;
-        public const int stepCountDefault = 10;
-
-        public const int pictureBoxLowerMargin = 10;
-        public const int pictureBoxUpperMargin = 25;
-        public const int visualizationImageMaxWidth = 19000;
-        public const int visualizationImageMaxXStep = 30;
-        public const int visualizationMargin = 20;
-        public const int nodeRadius = 8;
-        public const int lineThickness = 1;
-    }
-
     public class Node
     {
         public ulong References { get; set; }

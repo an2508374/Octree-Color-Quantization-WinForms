@@ -14,9 +14,11 @@ namespace Octree_Color_Quantization_WinForms
         private Bitmap? processedImage;
         private Bitmap? visualizationImage;
         private Octree ocTree;
+        private LinearStepGenerator linearStepGenerator;
+        private ExponentialStepGenerator exponentialStepGenerator;
+        private IStepGenerator stepGenerator;
         private int minColorCount;
         private int currentColorCount;
-        private int stepCount;
 
         private TableLayoutPanel verticalPanel = new TableLayoutPanel();
         private TableLayoutPanel horizontalPanel = new TableLayoutPanel();
@@ -67,10 +69,12 @@ namespace Octree_Color_Quantization_WinForms
             panelVisualization.Controls.Add(pictureBoxVisualization);
 
             ocTree = new Octree();
+            linearStepGenerator = new LinearStepGenerator();
+            exponentialStepGenerator = new ExponentialStepGenerator();
+            stepGenerator = linearStepGenerator;
             minColorCount = Const.minColorCountDefault;
-            stepCount = Const.stepCountDefault;
             textBoxMinColorCount.Text = minColorCount.ToString();
-            textBoxStepCount.Text = stepCount.ToString();
+            textBoxOption.Text = stepGenerator.GetTextBoxOption();
         }
 
         private void InsertColorsToOctree()
@@ -173,17 +177,18 @@ namespace Octree_Color_Quantization_WinForms
                 pictureBoxProcessed.Image?.Dispose();
                 pictureBoxProcessed.Image = null;
 
-                stepCount = Const.stepCountDefault;
-                textBoxStepCount.Text = stepCount.ToString();
+                linearStepGenerator.Reset();
+                exponentialStepGenerator.Reset();
+                textBoxOption.Text = stepGenerator.GetTextBoxOption();
                 groupBoxProcessed.Text = "Processed Image";
 
                 InsertColorsToOctree();
                 groupBoxImported.Text = $"Imported Image ({ocTree.LeafCount} colors)";
-                buttonNextStep.Enabled = true;
 
                 ocTree.UpdatePalette();
                 UpdateVisualizationImage();
                 groupBoxVisualization.Text = "Octree Visualization (For Imported Image)";
+                buttonNextStep.Enabled = true;
             }
         }
 
@@ -223,14 +228,13 @@ namespace Octree_Color_Quantization_WinForms
         {
             UpdateCurrentColorCount();
             ocTree.UpdateTree(currentColorCount);
-            //ocTree.UpdatePalette();
             UpdateProcessedImage();
 
-            --stepCount;
-            textBoxStepCount.Text = stepCount.ToString();
+            stepGenerator.UpdateOptionAfterStep();
+            textBoxOption.Text = stepGenerator.GetTextBoxOption();
             groupBoxProcessed.Text = $"Processed Image ({ocTree.LeafCount} colors)";
-            
-            if (stepCount <= 0)
+
+            if (stepGenerator.IsLastStep())
             {
                 buttonNextStep.Enabled = false;
             }
@@ -241,13 +245,7 @@ namespace Octree_Color_Quantization_WinForms
 
         private void UpdateCurrentColorCount()
         {
-            if (stepCount <= 0 || ocTree.LeafCount <= 0)
-            {
-                return;
-            }
-
-            currentColorCount = ocTree.LeafCount;
-            currentColorCount -= (ocTree.LeafCount - minColorCount) / stepCount;
+            currentColorCount = stepGenerator.GetCurrentColorCount(ocTree.LeafCount, minColorCount);
         }
 
         private int UpdateDataFromTextBox(TextBox textBox, int updatedValue)
@@ -256,13 +254,15 @@ namespace Octree_Color_Quantization_WinForms
 
             if (System.Text.RegularExpressions.Regex.IsMatch(textBox.Text, "[^0-9]"))
             {
-                MessageBox.Show("This field must be an integer number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("This field must be an integer number.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBox.Text = textBox.Text.Remove(textBox.Text.Length - 1);
             }
 
             if (textBox.Text.Length > 0 && !Int32.TryParse(textBox.Text, out result))
             {
-                MessageBox.Show("This field must be an integer number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("This field must be an integer number.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return result;
@@ -271,13 +271,26 @@ namespace Octree_Color_Quantization_WinForms
         private void TextBoxMinColorCount_TextChanged(object sender, EventArgs e)
         {
             minColorCount = UpdateDataFromTextBox(textBoxMinColorCount, minColorCount);
-            UpdateCurrentColorCount();
         }
 
         private void TextBoxStepCount_TextChanged(object sender, EventArgs e)
         {
-            stepCount = UpdateDataFromTextBox(textBoxStepCount, stepCount);
-            UpdateCurrentColorCount();
+            int changedOption = stepGenerator.GetOptionValue();
+            stepGenerator.UpdateOption(UpdateDataFromTextBox(textBoxOption, changedOption));
+        }
+
+        private void RadioButtonLinearly_Click(object sender, EventArgs e)
+        {
+            stepGenerator = linearStepGenerator;
+            labelOption.Text = stepGenerator.GetLabelOption();
+            textBoxOption.Text = stepGenerator.GetTextBoxOption();
+        }
+
+        private void RadioButtonExponentially_Click(object sender, EventArgs e)
+        {
+            stepGenerator = exponentialStepGenerator;
+            labelOption.Text = stepGenerator.GetLabelOption();
+            textBoxOption.Text = stepGenerator.GetTextBoxOption();
         }
     }
 }

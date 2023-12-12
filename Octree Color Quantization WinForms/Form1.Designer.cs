@@ -35,8 +35,11 @@
             groupBoxVisualization = new GroupBox();
             groupBoxProcessed = new GroupBox();
             groupBoxOptions = new GroupBox();
-            textBoxStepCount = new TextBox();
+            radioButtonExponentially = new RadioButton();
+            radioButtonLinearly = new RadioButton();
             label2 = new Label();
+            textBoxOption = new TextBox();
+            labelOption = new Label();
             textBoxMinColorCount = new TextBox();
             label1 = new Label();
             buttonNextStep = new Button();
@@ -109,8 +112,11 @@
             // groupBoxOptions
             // 
             groupBoxOptions.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            groupBoxOptions.Controls.Add(textBoxStepCount);
+            groupBoxOptions.Controls.Add(radioButtonExponentially);
+            groupBoxOptions.Controls.Add(radioButtonLinearly);
             groupBoxOptions.Controls.Add(label2);
+            groupBoxOptions.Controls.Add(textBoxOption);
+            groupBoxOptions.Controls.Add(labelOption);
             groupBoxOptions.Controls.Add(textBoxMinColorCount);
             groupBoxOptions.Controls.Add(label1);
             groupBoxOptions.Controls.Add(buttonNextStep);
@@ -122,24 +128,61 @@
             groupBoxOptions.TabStop = false;
             groupBoxOptions.Text = "Quantization Options";
             // 
-            // textBoxStepCount
+            // radioButtonExponentially
             // 
-            textBoxStepCount.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            textBoxStepCount.Location = new Point(224, 59);
-            textBoxStepCount.Name = "textBoxStepCount";
-            textBoxStepCount.Size = new Size(125, 27);
-            textBoxStepCount.TabIndex = 4;
-            textBoxStepCount.TextChanged += TextBoxStepCount_TextChanged;
+            radioButtonExponentially.AutoSize = true;
+            radioButtonExponentially.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            radioButtonExponentially.Location = new Point(48, 162);
+            radioButtonExponentially.Name = "radioButtonExponentially";
+            radioButtonExponentially.Size = new Size(108, 24);
+            radioButtonExponentially.TabIndex = 7;
+            radioButtonExponentially.TabStop = true;
+            radioButtonExponentially.Text = "Exponential";
+            radioButtonExponentially.UseVisualStyleBackColor = true;
+            radioButtonExponentially.Click += RadioButtonExponentially_Click;
+            // 
+            // radioButtonLinearly
+            // 
+            radioButtonLinearly.AutoSize = true;
+            radioButtonLinearly.Checked = true;
+            radioButtonLinearly.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            radioButtonLinearly.Location = new Point(48, 132);
+            radioButtonLinearly.Name = "radioButtonLinearly";
+            radioButtonLinearly.Size = new Size(70, 24);
+            radioButtonLinearly.TabIndex = 6;
+            radioButtonLinearly.TabStop = true;
+            radioButtonLinearly.Text = "Linear";
+            radioButtonLinearly.UseVisualStyleBackColor = true;
+            radioButtonLinearly.Click += RadioButtonLinearly_Click;
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(25, 62);
+            label2.Location = new Point(25, 109);
             label2.Name = "label2";
-            label2.Size = new Size(193, 20);
-            label2.TabIndex = 3;
-            label2.Text = "Number of remaining steps:";
+            label2.Size = new Size(192, 20);
+            label2.TabIndex = 5;
+            label2.Text = "Changing number of colors:";
+            // 
+            // textBoxOption
+            // 
+            textBoxOption.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            textBoxOption.Location = new Point(224, 59);
+            textBoxOption.Name = "textBoxOption";
+            textBoxOption.Size = new Size(125, 27);
+            textBoxOption.TabIndex = 4;
+            textBoxOption.TextChanged += TextBoxStepCount_TextChanged;
+            // 
+            // labelOption
+            // 
+            labelOption.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            labelOption.Location = new Point(25, 62);
+            labelOption.Name = "labelOption";
+            labelOption.Size = new Size(193, 20);
+            labelOption.TabIndex = 3;
+            labelOption.Text = "Number of remaining steps:";
+            labelOption.TextAlign = ContentAlignment.MiddleRight;
             // 
             // textBoxMinColorCount
             // 
@@ -162,6 +205,7 @@
             // 
             // buttonNextStep
             // 
+            buttonNextStep.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             buttonNextStep.Enabled = false;
             buttonNextStep.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             buttonNextStep.Location = new Point(25, 227);
@@ -214,9 +258,12 @@
         private Panel panel;
         private Button buttonNextStep;
         private Label label1;
-        private TextBox textBoxStepCount;
-        private Label label2;
+        private TextBox textBoxOption;
+        private Label labelOption;
         private TextBox textBoxMinColorCount;
         private GroupBox groupBoxVisualization;
+        private RadioButton radioButtonExponentially;
+        private RadioButton radioButtonLinearly;
+        private Label label2;
     }
 }
