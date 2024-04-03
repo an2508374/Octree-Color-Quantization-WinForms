@@ -19,10 +19,10 @@ Octrees seems to be a very efficient data structure. They are just like binary t
 Located on the bottom of the window, is updated on each going to the next step of quantization.
 
 ## Images
-![Image 1](images/image_1_1.png)
-![Image 1](images/image_1_2.png)
-![Image 1](images/image_1_3.png)
-![Image 2](images/image_2_1.png)
-![Image 2](images/image_2_2.png)
-![Image 2](images/image_2_3.png)
-![Image 2](images/image_2_4.png)
+![Image 1](Images/image_1_1.png)
+![Image 1](Images/image_1_2.png)
+![Image 1](Images/image_1_3.png)
+![Image 2](Images/image_2_1.png)
+![Image 2](Images/image_2_2.png)
+![Image 2](Images/image_2_3.png)
+![Image 2](Images/image_2_4.png)
