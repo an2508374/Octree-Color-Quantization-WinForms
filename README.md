@@ -19,11 +19,13 @@ Octrees seems to be a very efficient data structure. They are like binary trees 
 Being located on the bottom of the window, is updated on each step of quantization. Due to the fact that the octree can be very wide, you can scroll it horizontally.
 
 ## Images
-Image for processing generated with option: "Generate Picture 2":
+
+### Image for processing generated with option: "Generate Picture 2":
 ![Image 1](Images/image_1_1.png)
 ![Image 1](Images/image_1_2.png)
 ![Image 1](Images/image_1_3.png)
-Image for processing imported from file:
+
+### Image for processing imported from file:
 ![Image 2](Images/image_2_1.png)
 ![Image 2](Images/image_2_2.png)
 ![Image 2](Images/image_2_3.png)
